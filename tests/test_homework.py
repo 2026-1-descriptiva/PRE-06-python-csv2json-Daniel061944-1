@@ -1,26 +1,46 @@
-"""Autograding script"""
+"""Script para convertir un archivo CSV a JSON"""
 
+import csv
 import json
-import os
+
+from nicegui import ui
 
 
-def test_01():
-    """Test app"""
+def convert_csv_2_json(input_file):
+    """Converts a CSV file to a JSON file"""
 
-    assert os.path.exists("files/drivers.json")
+    output_file = input_file.replace(".csv", ".json")
+    data = []
 
-    # read the json file "drivers.json"
-    with open("files/drivers.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+    with open(input_file, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
 
-    assert len(data) == 34
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
 
-    assert data[0] == {
-        "driverId": "10",
-        "name": "George Vetticaden",
-        "ssn": "621011971",
-        "location": "244-4532 Nulla Rd.",
-        "certified": "N",
-        "wage-plan": "miles",
-    }
-#tarea
+    ui.notify("The file was transformed successfully!")
+
+
+def app():
+    """Main function to run the app"""
+
+    ui.label("CSV to JSON Converter").classes("text-4xl font-bold")
+    ui.label("")
+
+    filename = ui.input(
+        label="CSV file to convert:",
+        placeholder="filename",
+    )
+
+    ui.label("")
+
+    ui.label("")
+    ui.button("Convert", on_click=lambda: convert_csv_2_json(filename.value))
+    ui.run()
+
+
+app()
+
+# pip3 install nicegui
